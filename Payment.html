@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proceed to Pay</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    header {
+      text-align: center;
+      background: linear-gradient(135deg, #007bff, #00c6ff);
+      color: white;
+      padding: 20px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #007bff;
+    }
+    .total {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-align: center;
+      color: #28a745;
+    }
+    .payment-options {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+    }
+    .pay-btn {
+      padding: 15px 25px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .pay-btn:hover {
+      transform: scale(1.05);
+    }
+    .cash {
+      background: linear-gradient(135deg, #28a745, #218838);
+    }
+    .upi {
+      background: linear-gradient(135deg, #ff6f61, #e63946);
+    }
+    .success {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #28a745;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<header>Proceed to Pay</header>
+
+<div class="container">
+  <h2>Confirm Your Payment</h2>
+  <div class="total">Total: Rs. <span id="totalAmount">0</span></div>
+
+  <div class="payment-options">
+    <button class="pay-btn cash" onclick="payWithCash()">Pay with Cash</button>
+    <button class="pay-btn upi" onclick="payWithUPI()">Pay with UPI</button>
+  </div>
+
+  <div class="success" id="successMsg"></div>
+</div>
+
+<script>
+  // Get cart data
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  let total = cart.reduce((sum, item) => sum + (item.price * (item.qty || 1)), 0);
+  document.getElementById("totalAmount").textContent = total;
+
+  function payWithCash() {
+    document.getElementById("successMsg").style.display = "block";
+    document.getElementById("successMsg").textContent = "✅ Order placed successfully! Pay with Cash on Delivery.";
+    
+    // 👉 Example: Send to Google Sheets or Backend
+    saveOrder("Cash");
+  }
+
+  function payWithUPI() {
+    let upiID = "yourupiid@upi"; // ⚡ Replace with your UPI ID
+    let name = "Swachh Services";
+    let url = `upi://pay?pa=${upiID}&pn=${encodeURIComponent(name)}&am=${total}&cu=INR`;
+
+    window.location.href = url;
+
+    // 👉 Example: Save to backend
+    saveOrder("UPI");
+  }
+
+  function saveOrder(paymentMethod) {
+    // ✅ Configurable: connect to Google Sheets, Firebase, or your backend
+    console.log("Saving order with method:", paymentMethod, "Total:", total, "Cart:", cart);
+
+    // Example for Google Sheets or API call:
+    // fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec", {
+    //   method: "POST",
+    //   body: JSON.stringify({ cart, total, paymentMethod }),
+    //   headers: { "Content-Type": "application/json" }
+    // });
+  }
+</script>
+
+</body>
+</html>
